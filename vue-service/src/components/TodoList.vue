@@ -8,7 +8,8 @@
         <div class="form-check flex-grow-1">
           <input class="form-check-input"
                 type="checkbox"
-                v-model="todo.completed">
+                :value="todo.completed"
+                @change="toggleTodo(index)">
           <label class="form-check-label" :class="{todo: todo.completed}">
             {{ todo.subject }}
           </label>
@@ -24,7 +25,28 @@
 
 <script>
 export default {
+    props: {
+        todos: {
+            type: Array,
+            required: true
+        }
+    },
+    emits: ['toggle-todo', 'delete-todo'],
+    setup(props, {emit}){
+        const toggleTodo = (index) => {
+            emit('toggle-todo', index);
+        }
 
+        const deleteTodo = (index) => {
+            emit('delete-todo', index);
+        }
+
+        return {
+            toggleTodo,
+            deleteTodo,
+        }
+
+    }
 }
 </script>
 

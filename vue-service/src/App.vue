@@ -5,7 +5,11 @@
     <div v-if="!todos.length">
       추가된 TODO 가 없습니다.
     </div>
-    <TodoList/>
+
+    <TodoList :todos="todos"
+              @toggle-todo="toggleTodo"
+              @delete-todo="deleteTodo"/>
+
   </div>
 </template>
 
@@ -51,10 +55,16 @@ export default {
       todos.value.push(todo);
     }
 
+    const toggleTodo = (index) => {
+      todos.value[index].completed = !todos.value[index].completed;  // 기존에 있던 것에 반대값 넣어라
+    }
+
+
     return{ // 추가해주는 것 잊지말기
       todos,
       deleteTodo,
       addTodo,
+      toggleTodo,
     }
   }
 }
