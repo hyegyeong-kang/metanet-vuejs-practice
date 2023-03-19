@@ -27,7 +27,7 @@ const router = createRouter({
 export default router;
 
 
-// /
+// 만들어야 할 URL 경로
 // /todos
 // /todos/create
 // /todos/:id
