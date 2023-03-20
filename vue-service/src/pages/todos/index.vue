@@ -1,66 +1,67 @@
 <template>
     <div>
-      <h2>To-Do List</h2>
-      <input
-          class="form-control"
-          type="text"
-          v-model="searchText"
-          placeholder="Search"
-          @keyup.enter="searchTodo"
-        >
-      <hr>
-      <TodoSimpleForm @add-todo="addTodo"/>
-      <div style="color: red">{{ error }}</div>
+        <div class="d-flex justify-content-between mb-3">
+            <h2>To-Do List</h2>
+            <button 
+                class="btn btn-primary"
+                @click="moveToCreatePage"
+            >
+                Create Todo
+            </button>
+        </div>
+        <hr>
+
+        <div v-if="!todos.length">
+            추가된 TODO 가 없습니다.
+        </div>
+            
+        <div  v-if="!todos.length">
+            There is nothing todo
+        </div>
   
-  
-      <div v-if="!todos.length">
-        추가된 TODO 가 없습니다.
-      </div>
-        
-      <div  v-if="!todos.length">
-        There is nothing todo
-      </div>
-  
-      <TodoList :todos="todos"
-                @toggle-todo="toggleTodo"
-                @delete-todo="deleteTodo"/>
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li
-          v-if="currentPage !== 1"
-          class="page-item">
-          <a class="page-link" @click="getTodos(currentPage - 1 )">Previous</a>
-        </li>
-        <li
-          v-for= "page in numberOfPages"
-          :key="page"
-          class="page-item"
-          :class="currentPage == page ? 'active' : ''">
-          <a class="page-link" 
-            @click="getTodos(page)">{{ page }}</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
-        <li
-          v-if="numberOfPages != currentPage" 
-          class="page-item">
-          <a class="page-link" @click="getTodos(currentPage + 1)">Next</a>
-        </li>
-      </ul>
-    </nav>
+        <TodoList :todos="todos"
+                    @toggle-todo="toggleTodo"
+                    @delete-todo="deleteTodo"/>
+        <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li
+            v-if="currentPage !== 1"
+            class="page-item">
+            <a class="page-link" @click="getTodos(currentPage - 1 )">Previous</a>
+            </li>
+            <li
+            v-for= "page in numberOfPages"
+            :key="page"
+            class="page-item"
+            :class="currentPage == page ? 'active' : ''">
+            <a class="page-link" 
+                @click="getTodos(page)">{{ page }}</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+            <li
+            v-if="numberOfPages != currentPage" 
+            class="page-item">
+            <a class="page-link" @click="getTodos(currentPage + 1)">Next</a>
+            </li>
+        </ul>
+        </nav>
     </div>
+    <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType"/>
   </template>
   
   <script>
   
   import { ref, computed, watch } from 'vue';
   import axios from "axios";
-  import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
-  import TodoList from '@/components/TodoList.vue'
+  import TodoList from '@/components/TodoList.vue';
+  import Toast from '@/components/Toast.vue';
+  import { useToast } from '@/composables/toast';
+  import { useRouter } from 'vue-router';
   
   export default {
     components: {
-      TodoSimpleForm,
       TodoList,
+      Toast,
     },
     setup(){
       const todos = ref([]);
@@ -70,13 +71,28 @@
       const limit = 5;
       const currentPage = ref(1);
       let timeout = null;
-  
+      const router = useRouter();
+
+      const{
+        toastMessage,
+        toastAlertType,
+        showToast,
+        triggerToast,
+      } = useToast();
+
       watch(searchText, () => { // 새로운 검색 
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           getTodos(1);      // 2초 기다렸다가 검색함
         }, 2000);
       });
+
+    const moveToCreatePage = () => {
+        router.push({
+                name: 'TodoCreate'
+            }
+        );
+    }
   
       const searchTodo = () => { // 즉각적으로 검색하는 기능
         clearTimeout(timeout);
@@ -123,7 +139,7 @@
           getTodos(1);
         } catch (err) {
           console.log(err);
-          error.value = 'Something went wrong';
+          triggerToast('Something went wrong ㅠ.ㅠ', 'danger');
         }
   
   
@@ -140,7 +156,7 @@
           todos.value = res.data;
         } catch (err) {
           console.log(err);
-          error.value = 'Something went wrong';
+          triggerToast('Something went wrong ㅠ.ㅠ', 'danger');
         }
       }
   
@@ -158,7 +174,7 @@
           getTodos(1);
         } catch (err) {
           console.log(err);
-          error.value = 'Something went wrong';
+          triggerToast('Something went wrong ㅠ.ㅠ', 'danger');
         }
       }
   
@@ -174,7 +190,7 @@
           todos.value[index].completed = checked;
         } catch (err) {
           console.log(err);
-          error.value = 'Something went wrong';
+          triggerToast('Something went wrong ㅠ.ㅠ', 'danger');
         }
   
       }
@@ -194,6 +210,11 @@
         currentPage,
         numberOfPages,
         searchTodo,
+        showToast,
+        toastMessage,
+        toastAlertType,
+        triggerToast,
+        moveToCreatePage,
       }
     }
   }
