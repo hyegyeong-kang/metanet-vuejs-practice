@@ -90,14 +90,29 @@
   
   
           const onSave = async () => {
-              const res = await axios.put(`http://localhost:3000/todos/${todoId}`, {
-                  subject: todo.value.subject,
-                  completed: todo.value.completed
-              });
-              originalTodo.value = {...res.data};  // 수정하고 나서 origin 을 새로운 값으로 변경해야 함
-              triggerToast('successfully save !^0^!');
-              console.log(res);
-          }
+            try{
+                let res;
+                const data = {
+                    subject: todo.value.subject,
+                    completed: todo.value.completed,
+                    body: todo.value.body
+                };
+
+                if(props.editing){
+                    res = await axios.put(`http://localhost:3000/todos/${todoId}`, data);
+                }else{
+                    res = await axios.post('http://localhost:3000/todos', data);
+                    todo.value.subject = '';
+                    todo.value.body = '';
+                }
+                originalTodo.value = {...res.data};  // 수정하고 나서 origin 을 새로운 값으로 변경해야 함
+                const message = 'Successfully' + (props.editing ? 'Update!' : 'Create!');
+                triggerToast(message);
+            }catch(err) {
+                console.log(err);
+                triggerToast('Something went wrong ㅠ.ㅠ', 'danger');
+            }
+          };
   
           const todoUpdated = computed(() => {
               return !_.isEqual(todo.value, originalTodo.value);  // 같지않으면 버튼 비활성화
