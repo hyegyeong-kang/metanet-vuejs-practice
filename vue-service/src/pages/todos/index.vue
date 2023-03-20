@@ -71,7 +71,7 @@
       const currentPage = ref(1);
       let timeout = null;
   
-      watch(searchText, () => {
+      watch(searchText, () => { // 새로운 검색 
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           getTodos(1);      // 2초 기다렸다가 검색함
