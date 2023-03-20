@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from '../pages/index.vue';
 import Todos from '../pages/todos/index.vue';
 import Todo from '../pages/todos/_id.vue';
+import TodoCreate from '../pages/todos/create/index.vue'
 //각각 경로의 컴포넌트 홈
 
 const router = createRouter({
@@ -19,7 +20,12 @@ const router = createRouter({
             component: Todos
         },
         {
-            path: '/todos/:id',
+            path: '/todos/create',
+            name: 'TodoCreate',
+            component: TodoCreate
+        },
+        {
+            path: '/todos/:id', // id 가 있는게 뒤에 있도록 creat 는 앞에 두자
             name: 'Todo',
             component: Todo
         }
