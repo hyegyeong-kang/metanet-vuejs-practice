@@ -39,12 +39,40 @@ import axios from 'axios';
 import {ref, computed} from '@vue/reactivity';
 import _ from 'lodash';
 import Toast from '@/components/Toast.vue';
+import {onMounted, onBeforeUpdate, onUpdated, onUnmounted, onBeforeUnmount} from 'vue';
+
 
 export default {
     components:{
         Toast
     },
     setup(){
+        onBeforeUpdate(()=>{
+            console.log(document.querySelector('#kosa'));
+        });
+
+        onMounted( () => {
+            console.log(document.querySelector('#kosa'));
+        });
+
+        onBeforeUpdate( () => {
+            console.log('before updated');
+        });
+
+        onUpdated( () => {
+            console.log('updated');
+        });
+
+        onBeforeUnmount( () => {
+            console.log('before unmounted');
+        });
+
+        onUnmounted( () => {
+            console.log('unmounted');
+        });
+
+        console.log('Hi');
+
         const route = useRoute();
         const router = useRouter();
         const todo = ref(null);
